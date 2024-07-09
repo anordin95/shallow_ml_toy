@@ -1,3 +1,5 @@
+"""This module is a refresher/intro to one way of using the multiprocessing library."""
+
 import multiprocessing as mp
 import queue
 import os

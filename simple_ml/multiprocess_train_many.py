@@ -9,7 +9,6 @@ import pandas as pd
 from simple_ml.train import train
 from simple_ml.shallow_network import ShallowNetwork
 
-mp.BoundedSemaphore
 
 def repeatedly_train(input_queue: mp.Queue, output_queue: mp.Queue, training_df: pd.DataFrame, min_loss_improvement: float, num_steps_to_improve_min_amount: int):
     
