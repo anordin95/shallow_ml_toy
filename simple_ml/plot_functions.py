@@ -35,7 +35,7 @@ def create_dataset_plot(dataset_df: pd.DataFrame, ax: plt.Axes = None, ndim=2):
     ax.grid(visible=True)
 
 
-def create_model_performance_plot_2d(model: torch.nn.Module, dataset_df: pd.DataFrame):
+def create_model_performance_plot_2d(model: ShallowNetwork, dataset_df: pd.DataFrame):
     """Plot the dataset and the activation-lines of each hidden-unit in the model.
     """
     
@@ -44,10 +44,9 @@ def create_model_performance_plot_2d(model: torch.nn.Module, dataset_df: pd.Data
     create_dataset_plot(dataset_df, ax, ndim=2)
     
     for idx, hidden_unit in enumerate(model.hidden_units):
-        _plot_hidden_units_activation_boundary(hidden_unit, idx+1, ax)
+        scaled_hidden_unit_repr = model.get_scaled_hidden_unit_repr(idx, precision=2)
+        _plot_hidden_units_activation_boundary(hidden_unit, idx+1, scaled_hidden_unit_repr, ax)
     
-    ax.text(0, 0, s=f"{model.__repr__(precision=2, is_for_matplotlib=True)}", transform=ax.transAxes)
-
     ax.axis('equal')
     ax.set_xlim([dataset_df['x1'].min() - 3, dataset_df['x1'].max() + 3])
     ax.set_ylim([dataset_df['x2'].min() - 3, dataset_df['x2'].max() + 3])
@@ -90,7 +89,7 @@ def create_model_performance_plot_3d(model: ShallowNetwork, dataset_df: pd.DataF
     ax.set_ylim([x2_min, x2_max])
 
 
-def _plot_hidden_units_activation_boundary(hidden_unit: HiddenUnit, hidden_unit_num: int, ax: plt.Axes):
+def _plot_hidden_units_activation_boundary(hidden_unit: HiddenUnit, hidden_unit_num: int, scaled_hidden_unit_repr: str, ax: plt.Axes):
     """Plot the activation-boundary line of a given hidden unit onto the provided axes object."""
     
     # -------- Plot the activation-boundary line -------- #
@@ -103,7 +102,7 @@ def _plot_hidden_units_activation_boundary(hidden_unit: HiddenUnit, hidden_unit_
     slope1, slope2, offset = [hidden_unit.slopes[0].item(), hidden_unit.slopes[1].item(), hidden_unit.offset.item()]
     x2s = -offset/slope2 - x1s * slope1/slope2
 
-    plotted_lines = ax.plot(x1s, x2s, label=f"hidden unit {hidden_unit_num}'s activation-boundary", alpha=0.5)
+    plotted_lines = ax.plot(x1s, x2s, label=f"hidden unit {hidden_unit_num}'s activation: {scaled_hidden_unit_repr}", alpha=0.5)
     # Save the color, so we can draw the arrows with the same color.
     color = plotted_lines[0].get_color()
 

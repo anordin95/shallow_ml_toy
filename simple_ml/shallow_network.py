@@ -5,14 +5,12 @@ from simple_ml.hidden_unit import HiddenUnit
 class ShallowNetwork(torch.nn.Module):
     def __init__(self, num_hidden_units: int):
         super().__init__()
-        
         self.num_hidden_units = num_hidden_units
         # It's crucial to wrap these sub-modules (i.e. the HiddenUnits) in a ModuleList rather than a plain ol'
         # list. In a regular list, the sub-modules would not be recognized by PyTorch as being learnable 
         # components and any parameters in those sub-modules would not be updated during training! Ask me
         # how I found that out...
         self.hidden_units = torch.nn.ModuleList([HiddenUnit() for _ in range(num_hidden_units)])
-        
         self.hidden_unit_scales = torch.nn.Parameter(torch.rand(num_hidden_units))
         self.offset = torch.nn.Parameter(torch.rand(1))
         self.sigmoid = torch.nn.Sigmoid()
@@ -26,14 +24,22 @@ class ShallowNetwork(torch.nn.Module):
         hidden_unit_values = torch.stack([hidden_unit(x) for hidden_unit in self.hidden_units], dim=1)        
         scaled_hidden_unit_values = self.hidden_unit_scales * hidden_unit_values
         total_hidden_unit_value = torch.sum(scaled_hidden_unit_values, dim=1)
-        
         y = self.sigmoid(self.offset + total_hidden_unit_value)
 
-        
         return y
+    
+    def get_scaled_hidden_unit_repr(self, hidden_unit_idx: int, precision: int = 4):
+        """This function returns a representation of the activation of a hidden-unit and the scaling which 
+        will be applied to that activation. For example, the activation may be ReLU(x1 + 2x2 + 3) and it's 
+        scaling is -2.5. So, this function would return -2.5ReLU(x1 + 2x2 + 3).
+        """
+        hidden_unit_repr = self.hidden_units[hidden_unit_idx].__repr__(precision=precision, use_tex=True)
+        scaling_factor = self.hidden_unit_scales[hidden_unit_idx]
+        scaled_hidden_unit_repr = f"{scaling_factor:.{precision}f}{hidden_unit_repr}"
+        return scaled_hidden_unit_repr
 
-    def __repr__(self, precision=4, is_for_matplotlib: bool = False):
-        
+
+    def __repr__(self, precision=4, use_tex: bool = False):
         # Include/exclude new-line formatting.
         format_str = f"Sigmoid(\n{self.offset.item():.{precision}f} + \n"
         # format_str = f"Sigmoid({self.offset.item():.{precision}f} + "
@@ -42,7 +48,7 @@ class ShallowNetwork(torch.nn.Module):
             
             # Add indentation/spacing for clearer viewing.
             format_str += f"    {self.hidden_unit_scales[i].item():.{precision}}"
-            format_str += f"{self.hidden_units[i].__repr__(precision, is_for_matplotlib)}"
+            format_str += f"{self.hidden_units[i].__repr__(precision, use_tex)}"
             
             # Don't add a plus-sign after the final hidden-unit's equation.
             if i != self.num_hidden_units - 1:
@@ -52,11 +58,9 @@ class ShallowNetwork(torch.nn.Module):
             format_str += '\n'
 
         format_str += ")"
-
         return format_str
     
     def nearly_equals(self, obj, precision=4) -> bool:
-        
         if not isinstance(obj, ShallowNetwork):
             return False
         if self.num_hidden_units != obj.num_hidden_units:
