@@ -32,22 +32,24 @@ class ShallowNetwork(torch.nn.Module):
         
         return y
 
-    def __repr__(self, precision=4):
+    def __repr__(self, precision=4, is_for_matplotlib: bool = False):
         
         # Include/exclude new-line formatting.
-        # format_str = f"Sigmoid(\n{self.offset.item():.{precision}f} + \n"
-        format_str = f"Sigmoid({self.offset.item():.{precision}f} + "
+        format_str = f"Sigmoid(\n{self.offset.item():.{precision}f} + \n"
+        # format_str = f"Sigmoid({self.offset.item():.{precision}f} + "
 
         for i in range(self.num_hidden_units):
             
-            format_str += f" {self.hidden_unit_scales[i].item():.{precision}f}{self.hidden_units[i]}"
+            # Add indentation/spacing for clearer viewing.
+            format_str += f"    {self.hidden_unit_scales[i].item():.{precision}}"
+            format_str += f"{self.hidden_units[i].__repr__(precision, is_for_matplotlib)}"
             
             # Don't add a plus-sign after the final hidden-unit's equation.
             if i != self.num_hidden_units - 1:
                 format_str += ' +'
             
             # Include/exclude new-line formatting.
-            # format_str += '\n'
+            format_str += '\n'
 
         format_str += ")"
 

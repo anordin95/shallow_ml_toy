@@ -4,3 +4,4 @@ pip-tools
 pandas
 seaborn
 torch
+tqdm

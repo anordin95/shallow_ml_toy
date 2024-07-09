@@ -21,8 +21,8 @@ def create_dataset_plot(dataset_df: pd.DataFrame, ax: plt.Axes = None, ndim=2):
         fig = plt.figure(figsize=(6, 6))
         ax = fig.add_subplot(projection='3d')
     
-    ax.set_xlabel("x1")
-    ax.set_ylabel("x2")
+    ax.set_xlabel("$x_1$")
+    ax.set_ylabel("$x_2$")
     ax.set_xlim([dataset_df['x1'].min() - 3, dataset_df['x1'].max() + 3])
     ax.set_ylim([dataset_df['x2'].min() - 3, dataset_df['x2'].max() + 3])
 
@@ -46,6 +46,8 @@ def create_model_performance_plot_2d(model: torch.nn.Module, dataset_df: pd.Data
     for idx, hidden_unit in enumerate(model.hidden_units):
         _plot_hidden_units_activation_boundary(hidden_unit, idx+1, ax)
     
+    ax.text(0, 0, s=f"{model.__repr__(precision=2, is_for_matplotlib=True)}", transform=ax.transAxes)
+
     ax.axis('equal')
     ax.set_xlim([dataset_df['x1'].min() - 3, dataset_df['x1'].max() + 3])
     ax.set_ylim([dataset_df['x2'].min() - 3, dataset_df['x2'].max() + 3])

@@ -37,9 +37,16 @@ class HiddenUnit(torch.nn.Module):
         
         return clipped_value
 
-    def __repr__(self, precision=4):
-        format_str = f"ReLU({self.slopes[0].item():.{precision}f}x\u2081"
-        format_str += f" + {self.slopes[1].item():.{precision}f}x\u2082"
+    def __repr__(self, precision=4, is_for_matplotlib: bool = False):
+        # Unicode \u208 puts the next character in a subscript. However, that's not supported
+        # for matplotlib text objects. Instead, they support TeX-like notation.
+        if is_for_matplotlib:
+            format_str = f"ReLU({self.slopes[0].item():.{precision}f}$x_1$"
+            format_str += f" + {self.slopes[1].item():.{precision}f}$x_2$"
+        else:
+            format_str = f"ReLU({self.slopes[0].item():.{precision}f}x\u2081"
+            format_str += f" + {self.slopes[1].item():.{precision}f}x\u2082"
+
         format_str += f" + {self.offset.item():.{precision}f})"
         return format_str
     
