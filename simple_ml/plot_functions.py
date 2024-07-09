@@ -34,12 +34,18 @@ def create_dataset_plot(dataset_df: pd.DataFrame, ax: plt.Axes = None, ndim=2):
 
     ax.grid(visible=True)
 
+def create_model_performance_plot(model: ShallowNetwork, dataset_df: pd.DataFrame):
+    
+    fig = plt.figure(figsize=(14, 6))
+    ax1 = fig.add_subplot(1, 2, 1)
+    ax2 = fig.add_subplot(1, 2, 2, projection='3d')
+    _create_model_performance_plot_2d(ax1, model, dataset_df)
+    _create_model_performance_plot_3d(fig, ax2, model, dataset_df)
 
-def create_model_performance_plot_2d(model: ShallowNetwork, dataset_df: pd.DataFrame):
+
+def _create_model_performance_plot_2d(ax: plt.Axes, model: ShallowNetwork, dataset_df: pd.DataFrame):
     """Plot the dataset and the activation-lines of each hidden-unit in the model.
     """
-    
-    fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(8, 8))
 
     create_dataset_plot(dataset_df, ax, ndim=2)
     
@@ -53,10 +59,7 @@ def create_model_performance_plot_2d(model: ShallowNetwork, dataset_df: pd.DataF
     ax.legend()
     
 
-def create_model_performance_plot_3d(model: ShallowNetwork, dataset_df: pd.DataFrame):
-    
-    fig = plt.figure(figsize=(10, 10))
-    ax = fig.add_subplot(projection='3d')
+def _create_model_performance_plot_3d(fig: plt.Figure, ax: plt.Axes, model: ShallowNetwork, dataset_df: pd.DataFrame):
     
     create_dataset_plot(dataset_df, ax, ndim=3)
 
