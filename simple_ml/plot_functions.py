@@ -36,7 +36,7 @@ def create_dataset_plot(dataset_df: pd.DataFrame, ax: plt.Axes = None, ndim=2):
 
 def create_model_performance_plot(model: ShallowNetwork, dataset_df: pd.DataFrame):
     
-    fig = plt.figure(figsize=(14, 6))
+    fig = plt.figure(figsize=(18, 8))
     ax1 = fig.add_subplot(1, 2, 1)
     ax2 = fig.add_subplot(1, 2, 2, projection='3d')
     _create_model_performance_plot_2d(ax1, model, dataset_df)
@@ -56,6 +56,7 @@ def _create_model_performance_plot_2d(ax: plt.Axes, model: ShallowNetwork, datas
     ax.axis('equal')
     ax.set_xlim([dataset_df['x1'].min() - 3, dataset_df['x1'].max() + 3])
     ax.set_ylim([dataset_df['x2'].min() - 3, dataset_df['x2'].max() + 3])
+    ax.set_title("Activation Boundaries")
     ax.legend()
     
 
@@ -86,7 +87,7 @@ def _create_model_performance_plot_3d(fig: plt.Figure, ax: plt.Axes, model: Shal
     )
     fig.colorbar(surface, shrink=0.5, pad=0.1)
     ax.set(xlabel="x1", ylabel="x2", zlabel="y")
-    
+    ax.set_title("Model Prediction Surface")
     ax.axis('equal')
     ax.set_xlim([x1_min, x1_max])
     ax.set_ylim([x2_min, x2_max])
