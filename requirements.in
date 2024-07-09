@@ -1,0 +1,6 @@
+jupyter
+numpy
+pip-tools
+pandas
+seaborn
+torch
